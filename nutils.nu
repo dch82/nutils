@@ -16,3 +16,12 @@ def df [
     ^df -B 1 | jc --df -r | from json | reject 1b_blocks | reject used | reject available | merge $size | merge $used | merge $available
   }
 }
+
+# ls -r replacement
+# Recommended usage: pipe into `table -e`
+def lsr [
+  dir = "."         # Directory to start in
+] {
+  cd $dir
+  ls | select name | merge (ls | get name | each { |item| cd $item; lsr | get name } | wrap contents)
+}
