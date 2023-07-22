@@ -2,19 +2,14 @@
 
 # Show filesystem disk space usage.
 def df [
-  --all (-a)  # Show all filesystems
+  --all (-a)    # Show all filesystems
 ] {
-  if $all {
-    let size = (^df -a -B 1 | jc --df -r | from json | get 1b_blocks | each { |item| into filesize } | wrap size)
-    let used = (^df -a -B 1 | jc --df -r | from json | get used | each { |item| into filesize } | wrap used )
-    let available = (^df -a -B 1 | jc --df -r | from json | get available | each { |item| into filesize } | wrap available )
-    ^df -a -B 1 | jc --df -r | from json | reject 1b_blocks | reject used | reject available | merge $size | merge $used | merge $available
-  } else {
-    let size = (^df -B 1 | jc --df -r | from json | get 1b_blocks | each { |item| into filesize } | wrap size)
-    let used = (^df -B 1 | jc --df -r | from json | get used | each { |item| into filesize } | wrap used )
-    let available = (^df -B 1 | jc --df -r | from json | get available | each { |item| into filesize } | wrap available )
-    ^df -B 1 | jc --df -r | from json | reject 1b_blocks | reject used | reject available | merge $size | merge $used | merge $available
-  }
+  let args = (if $all { "-aB1" } else { "-B1" })                                                                  # If --all is set, pass -aB1 to df; else pass -B1 to df
+  let pre_convert = (run-external "df" $args --redirect-stdout | jc --df -r | from json)                          # Convert df output to nushell-friendly output
+  let size = ($pre_convert | get 1b_blocks | par-each { |item| into filesize } | wrap size)                       # Convert df output size column to filesize format
+  let used = ($pre_convert | get used | par-each { |item| into filesize } | wrap used )                           # Convert df output used column to filesize format
+  let available = ($pre_convert | get available | par-each { |item| into filesize } | wrap available )            # Convert df output available column to filesize format
+  $pre_convert | reject 1b_blocks | reject used | reject available | merge $size | merge $used | merge $available # Reject old size, used and available columns and merge new columns
 }
 
 # ls -r replacement
@@ -22,6 +17,6 @@ def df [
 def lsr [
   dir = "."         # Directory to start in
 ] {
-  cd $dir
-  ls | select name | merge (ls | get name | par-each { |item| cd $item; lsr } | wrap contents)
+  cd $dir                                                                                       # Go into $dir
+  ls | select name | merge (ls | get name | par-each { |item| cd $item; lsr } | wrap contents)  # List filenames and list directory contents, then repeat
 }
