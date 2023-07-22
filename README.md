@@ -16,3 +16,4 @@ Just add this to your `$env.config`:
 
 * `df`
 * `lsr` (`tree` or `ls -r` replacement)
+* `who`
