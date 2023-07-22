@@ -23,8 +23,7 @@ def lsr [
 
 # Show who is logged on
 def who [] {
-  let pre_convert = (run-external "who" --redirect-stdout | jc --who | from json)
+  let pre_convert = (run-external "who" "-u" --redirect-stdout | jc --who | from json)
   let time = ($pre_convert | get time | into datetime | wrap time)
-  let epoch = ($pre_convert | get epoch | into datetime | wrap epoch)
-  $pre_convert | reject time | reject epoch | merge $time | merge $epoch
+  $pre_convert | reject time | reject epoch | merge $time
 }
