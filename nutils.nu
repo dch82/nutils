@@ -23,5 +23,5 @@ def lsr [
   dir = "."         # Directory to start in
 ] {
   cd $dir
-  ls | select name | merge (ls | get name | each { |item| cd $item; lsr } | wrap contents)
+  ls | select name | merge (ls | get name | par-each { |item| cd $item; lsr } | wrap contents)
 }
