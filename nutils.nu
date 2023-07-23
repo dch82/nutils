@@ -35,6 +35,9 @@ def lsr [
 }
 
 # Show who is logged on
-def who [] {    # Code shared by @amtoine
-  ^who --all --heading --users | detect columns | rename name tty date idle pid comment exit | into datetime date
+def who [     # Shared by @amotine
+  --all (-a)  # Show all details
+] {
+  let args = ( if $all { "-aHu" } else { "-Hu" })
+  run-external "who" $args --redirect-stdout | detect columns | rename name tty date idle pid comment exit | into datetime date
 }
