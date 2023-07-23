@@ -2,7 +2,6 @@
 
 # Show filesystem disk space usage of {{file}}.
 def df [        # Code shared by @fdncred
-  file = ""
   --all (-a)    # Show all filesystems
 ] {
   let args = (if $all { "-aB1" } else { "-B1" })        # If --all is set, pass -aB1 to df; else pass -B1 to df
