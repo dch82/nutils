@@ -4,8 +4,7 @@ Utilities for Nu
 ## Prerequites
 
 * [Nushell](https://www.nushell.sh)
-* [jc](https://github.com/kellyjonbrazil/jc)
-* [GNU Coreutils](https://www.gnu.org/software/coreutils/) or a compatible utilities library (YMMV)
+* Some [POSIX-compatible](https://en.wikipedia.org/wiki/POSIX) utililities library
 
 ## Installation
 
